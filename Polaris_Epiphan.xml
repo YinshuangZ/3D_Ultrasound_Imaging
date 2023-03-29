@@ -1,0 +1,76 @@
+<PlusConfiguration version="2.7" PlusRevision="Plus-2.8.0.62873a16 - Win64">
+  <DataCollection StartupDelaySec="1">
+    <DeviceSet Name="PlusServer: NDI Polaris and Epiphan Calibration" Description="Configuration file with Epiphan and NDI Polaris tools: Probe (8700339), StylusTip (8700340_origine_dans_la_point)" />
+    <Device
+      Id="TrackerDevice"
+      Type="PolarisTracker"
+      LocalTimeOffsetSec="0.025"
+      ToolReferenceFrame="Tracker" >
+      <DataSources>
+        <DataSource Type="Tool" Id="Probe" RomFile="NdiToolDefinitions/8700339.rom"  />
+        <DataSource Type="Tool" Id="StylusTip" RomFile="NdiToolDefinitions/8700340_origine_dans_la_pointe.rom"  /> 
+      </DataSources>    
+<OutputChannels>
+        <OutputChannel Id="TrackerStream" >
+          <DataSource Id="Probe"/>
+          <DataSource Id="StylusTip"/>
+        </OutputChannel>
+      </OutputChannels>
+    </Device>
+    
+    <Device
+      Id="VideoDevice" 
+      Type="Epiphan" >
+      <DataSources>
+        <DataSource Type="Video" Id="Video" PortUsImageOrientation="MF"  />
+      </DataSources>      
+      <OutputChannels>
+        <OutputChannel Id="VideoStream" VideoDataSourceId="Video" />
+      </OutputChannels>
+    </Device>
+    
+    <Device Id="TrackedVideoDevice" Type="VirtualMixer">
+      <InputChannels>
+        <InputChannel Id="TrackerStream" />
+        <InputChannel Id="VideoStream" />
+      </InputChannels>
+      <OutputChannels>
+        <OutputChannel Id="TrackedVideoStream" />
+      </OutputChannels>
+    </Device>
+  </DataCollection>
+  <PlusOpenIGTLinkServer MaxNumberOfIgtlMessagesToSend="1" MaxTimeSpentWithProcessingMs="50" ListeningPort="18944" SendValidTransformsOnly="TRUE" OutputChannelId="TrackedVideoStream">
+    <DefaultClientInfo>
+      <MessageTypes>
+	    <Message Type="IMAGE" />
+        <Message Type="TRANSFORM" />
+      </MessageTypes>
+      <TransformNames>
+		<Transform Name="StylusTipToProbe" />
+      </TransformNames>
+	  <ImageNames>
+        <Image Name="Image" EmbeddedTransformToFrame="Image" />
+      </ImageNames>
+    </DefaultClientInfo>
+  </PlusOpenIGTLinkServer>
+  <fCal
+    StylusModelId="StylusModel"
+    ImageDisplayableObjectId="LiveImage"
+    NumberOfCalibrationImagesToAcquire="200"
+    NumberOfValidationImagesToAcquire="100"
+    NumberOfStylusCalibrationPointsToAcquire="200"
+    RecordingIntervalMs="100"
+    MaxTimeSpentWithProcessingMs="70"
+    ImageCoordinateFrame="Image"
+    ProbeCoordinateFrame="Probe"
+    ReferenceCoordinateFrame="Tracker"
+    TransducerOriginCoordinateFrame="TransducerOrigin"
+    TransducerOriginPixelCoordinateFrame="TransducerOriginPixel"
+    TemporalCalibrationDurationSec="20"
+    FixedChannelId="VideoStream"
+    FixedSourceId="Video"
+    MovingChannelId="TrackerStream"
+    MovingSourceId="ProbeToTracker"
+    DefaultSelectedChannelId="TrackedVideoStream"
+    FreeHandStartupDelaySec="5" />
+</PlusConfiguration>
